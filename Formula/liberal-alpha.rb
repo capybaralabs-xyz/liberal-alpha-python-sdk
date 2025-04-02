@@ -37,6 +37,13 @@ class LiberalAlpha < Formula
   resource "coincurve" do
     url "https://files.pythonhosted.org/packages/6f/a2/f2a38eb05b747ed3e54e1be33be339d4a14c1f5cc6a6e2b342b5e8160d51/coincurve-21.0.0.tar.gz"
     sha256 "8b37ce4265a82bebf0e796e21a769e56fdbf8420411ccbe3fafee4ed75b6a6e5"
+    def install
+      ENV["PIP_NO_BUILD_ISOLATION"] = "1"
+      ENV["CXX"] = "clang++"
+      ENV["CXXFLAGS"] = "-std=c++11"
+      system Formula["python@3.10"].opt_bin/"python3.10", "-m", "pip",
+             "install", "--no-deps", "--no-binary", ":all:", "."
+    end
   end
 
   resource "cytoolz" do
@@ -164,7 +171,6 @@ class LiberalAlpha < Formula
     sha256 "82544de02076bafba038ce055ee6412d68da13ab47f0c60cab827346de828dee"
   end
 
-
   def install
     virtualenv_install_with_resources
     # system libexec/"bin/pip", "install", *%w[
@@ -172,13 +178,15 @@ class LiberalAlpha < Formula
     #   protobuf
     #   requests
     #   coincurve
-    #   pycryptodomebrew test --verbose ./Formula/liberal_alpha.rb
-
+    #   pycryptodome
     #   eth-account
     #   eth-keys
     #   websockets
     # ]
   end
+  
+
+  
 
   test do
     assert_match "Liberal Alpha CLI", shell_output("#{bin}/liberal_alpha --help")
